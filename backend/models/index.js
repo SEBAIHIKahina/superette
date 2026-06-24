@@ -19,6 +19,17 @@ const db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
+db.categories = require("./categorie.model.js")(sequelize, Sequelize);
 db.produits = require("./produit.model.js")(sequelize, Sequelize);
+
+db.categories.hasMany(db.produits, {
+  foreignKey: "categorieNom",
+  sourceKey: "nom",
+});
+
+db.produits.belongsTo(db.categories, {
+  foreignKey: "categorieNom",
+  targetKey: "nom",
+});
 
 module.exports = db;
