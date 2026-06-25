@@ -3,36 +3,53 @@ const cors = require("cors");
 const app = express();
 const db = require("./models");
 
-var corsOptions = {
-  origin: "http://localhost:5173"
-};
+// ======================
+// Configuration CORS
+// ======================
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
 
-app.use(cors(corsOptions));
-
-// parse requests of content-type - application/json
+// ======================
+// Middleware
+// ======================
 app.use(express.json());
-
-// parse requests of content-type - application/x-www-form-urlencoded
 app.use(express.urlencoded({ extended: true }));
-//
 
-db.sequelize.sync({ force: true })
+// ======================
+// Synchronisation BDD
+// ======================
+// Utilise force:true uniquement la première fois.
+// Ensuite remplace par sync() pour éviter de supprimer les données.
+db.sequelize
+  .sync()
   .then(() => {
-    console.log("Synced db.");
+    console.log("Base de données synchronisée.");
   })
   .catch((err) => {
-    console.log("Failed to sync db: " + err.message);
+    console.error("Erreur de synchronisation :", err.message);
   });
 
-// simple route
+// ======================
+// Route de test
+// ======================
 app.get("/", (req, res) => {
-  res.json({ message: "supertte application." });
+  res.json({ message: "Supertte application." });
 });
+
+// ======================
+// Routes
+// ======================
 require("./routes/categorie.routes")(app);
 
-
-// set port, listen for requests
+// ======================
+// Lancement du serveur
+// ======================
 const PORT = process.env.PORT || 5000;
+
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}.`);
+  console.log(`Serveur démarré sur http://localhost:${PORT}`);
 });
