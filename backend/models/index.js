@@ -21,6 +21,8 @@ db.sequelize = sequelize;
 
 db.categories = require("./categorie.model.js")(sequelize, Sequelize);
 db.produits = require("./produit.model.js")(sequelize, Sequelize);
+db.ventes = require("./vente.model.js")(sequelize, Sequelize);
+db.detailVentes = require("./detailvente.model.js")(sequelize, Sequelize);
 
 db.categories.hasMany(db.produits, {
   foreignKey: "categorieNom",
@@ -30,6 +32,30 @@ db.categories.hasMany(db.produits, {
 db.produits.belongsTo(db.categories, {
   foreignKey: "categorieNom",
   targetKey: "nom",
+});
+
+// =====================
+// Vente -> Détail Vente
+// =====================
+
+db.ventes.hasMany(db.detailVentes, {
+  foreignKey: "venteId",
+});
+
+db.detailVentes.belongsTo(db.ventes, {
+  foreignKey: "venteId",
+});
+
+// =====================
+// Produit -> Détail Vente
+// =====================
+
+db.produits.hasMany(db.detailVentes, {
+  foreignKey: "produitId",
+});
+
+db.detailVentes.belongsTo(db.produits, {
+  foreignKey: "produitId",
 });
 
 module.exports = db;

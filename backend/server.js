@@ -45,7 +45,7 @@ app.get("/", (req, res) => {
 // ======================
 require("./routes/categorie.routes")(app);
 require("./routes/produit.routes")(app);
-
+require("./routes/vente.routes")(app);
 // ======================
 // Lancement du serveur
 // ======================
