@@ -5,26 +5,38 @@ module.exports = (sequelize, Sequelize) => {
       primaryKey: true,
       autoIncrement: true,
     },
+
     nom: {
       type: Sequelize.STRING,
       allowNull: false,
     },
+
+    codeBarre: {
+      type: Sequelize.STRING,
+      allowNull: false,
+      unique: true,
+    },
+
     prixAchat: {
       type: Sequelize.FLOAT,
       allowNull: false,
     },
+
     prixVente: {
       type: Sequelize.FLOAT,
       allowNull: false,
     },
+
     stock: {
       type: Sequelize.INTEGER,
       defaultValue: 0,
     },
+
     etat: {
       type: Sequelize.BOOLEAN,
       defaultValue: true,
     },
+
     categorieNom: {
       type: Sequelize.STRING,
       allowNull: false,
