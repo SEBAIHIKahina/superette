@@ -65,16 +65,14 @@ function Products() {
 
   };
   const rechercherParCodeBarre = (code) => {
-  axios
-    .get(`http://localhost:5000/api/produits/barcode/${code}`)
-    .then((res) => {
-      alert("Produit trouvé : " + res.data.nom);
-      setScannerVisible(false);
-    })
-    .catch((err) => {
-      console.log(err);
-      alert("Produit introuvable");
-    });
+
+  setForm({
+    ...form,
+    codeBarre: code,
+  });
+
+  setScannerVisible(false);
+
 };
   return (
 
@@ -105,13 +103,25 @@ function Products() {
               </div>
 
               <div className="col-md-4">
-                <input
-                  className="form-control"
-                  placeholder="Code Barre"
-                  name="codeBarre"
-                  value={form.codeBarre}
-                  onChange={handleChange}
-                />
+                <div className="input-group">
+
+    <input
+      className="form-control"
+      placeholder="Code Barre"
+      name="codeBarre"
+      value={form.codeBarre}
+      readOnly
+    />
+
+    <button
+      className="btn btn-success"
+      type="button"
+      onClick={() => setScannerVisible(true)}
+    >
+      Scanner
+    </button>
+
+  </div>
               </div>
 
               <div className="col-md-4">
@@ -166,19 +176,13 @@ function Products() {
 
             <div className="d-flex gap-2">
 
-  <button
-    className="btn btn-primary"
-    onClick={ajouterProduit}
+               <button
+                   className="btn btn-primary"
+                   onClick={ajouterProduit}
   >
-    Ajouter Produit
-  </button>
+                    Ajouter Produit
+                 </button>
 
-  <button
-    className="btn btn-success"
-    onClick={() => setScannerVisible(true)}
-  >
-    Scanner un code-barres
-  </button>
 
 </div>
 
