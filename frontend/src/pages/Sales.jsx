@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
-import axios from "axios";
 import { useReactToPrint } from "react-to-print";
-
+import ProductService from "../services/produit.service";
+import SalesService from "../services/vente.service";
 import Side from "../components/Side";
 import Navbar from "../components/Navbar";
 import BarcodeScanner from "../components/BarcodeScanner";
@@ -45,73 +45,64 @@ function Sales() {
   // =============================
 
   useEffect(() => {
-  chargerProduits();
-}, []);
+    chargerProduits();
+  }, []);
 
 
-  
-const ajouterProduitManuel = () => {
 
-  if (!produitSelectionne) {
-    alert("Sélectionnez un produit");
-    return;
-  }
+  const ajouterProduitManuel = () => {
 
-  const produit = produits.find(
-    (p) => p.id == produitSelectionne
-  );
+    if (!produitSelectionne) {
+      alert("Sélectionnez un produit");
+      return;
+    }
 
-  if (!produit) return;
+    const produit = produits.find(
+      (p) => p.id == produitSelectionne
+    );
 
-  const existe = panier.find(
-    (p) => p.id === produit.id
-  );
+    if (!produit) return;
 
-  if (existe) {
+    const existe = panier.find(
+      (p) => p.id === produit.id
+    );
 
-    setPanier(
-      panier.map((p) =>
-        p.id === produit.id
-          ? {
+    if (existe) {
+
+      setPanier(
+        panier.map((p) =>
+          p.id === produit.id
+            ? {
               ...p,
               quantite: p.quantite + 1,
             }
-          : p
-      )
-    );
+            : p
+        )
+      );
 
-  } else {
+    } else {
 
-    setPanier([
-      ...panier,
-      {
-        id: produit.id,
-        nom: produit.nom,
-        prix: produit.prixVente,
-        quantite: 1,
-      },
-    ]);
+      setPanier([
+        ...panier,
+        {
+          id: produit.id,
+          nom: produit.nom,
+          prix: produit.prixVente,
+          quantite: 1,
+        },
+      ]);
 
-  }
+    }
 
-  setProduitSelectionne("");
+    setProduitSelectionne("");
 
-};
+  };
 
   const chargerProduits = () => {
 
-    axios
-      .get("http://localhost:5000/api/produits")
-      .then((res) => {
-
-        setProduits(res.data);
-
-      })
-      .catch((err) => {
-
-        console.log(err);
-
-      });
+    ProductService.getAll()
+      .then((res) => setProduits(res.data))
+      .catch((err) => console.log(err));
 
   };
 
@@ -131,9 +122,9 @@ const ajouterProduitManuel = () => {
         panier.map((p) =>
           p.id === produit.id
             ? {
-                ...p,
-                quantite: p.quantite + 1,
-              }
+              ...p,
+              quantite: p.quantite + 1,
+            }
             : p
         )
       );
@@ -160,24 +151,12 @@ const ajouterProduitManuel = () => {
 
   const rechercherProduit = (code) => {
 
-    axios
-      .get(
-        `http://localhost:5000/api/produits/barcode/${code}`
-      )
-
+    ProductService.getByBarcode(code)
       .then((res) => {
-
         ajouterAuPanier(res.data);
-
         setScannerVisible(false);
-
       })
-
-      .catch(() => {
-
-        alert("Produit introuvable");
-
-      });
+      .catch(() => alert("Produit introuvable"));
 
   };
 
@@ -214,49 +193,41 @@ const ajouterProduitManuel = () => {
   // =============================
   // Quantité +
   // =============================
-const validerVente = () => {
+  const validerVente = () => {
 
-  if (panier.length === 0) {
-    alert("Le panier est vide.");
-    return;
-  }
+    if (panier.length === 0) {
+      alert("Le panier est vide.");
+      return;
+    }
 
-  const produits = panier.map((p) => ({
-    produitId: p.id,
-    quantite: p.quantite,
-  }));
+    const produits = panier.map((p) => ({
+      produitId: p.id,
+      quantite: p.quantite,
+    }));
 
-  axios
-    .post("http://localhost:5000/api/ventes", {
+    SalesService.create({
       produits,
       modePaiement,
     })
-    .then((res) => {
-      alert(res.data.message);
+      .then((res) => {
+        alert(res.data.message);
+        imprimerTicket();
+        setPanier([]);
+      })
+      .catch((err) => {
+        alert(err.response?.data?.message || "Erreur vente");
+      });
 
-      imprimerTicket();
-
-      setPanier([]);
-    })
-    .catch((err) => {
-      console.log(err);
-
-      alert(
-        err.response?.data?.message ||
-        "Erreur lors de la vente"
-      );
-    });
-
-};
+  };
   const augmenter = (id) => {
 
     setPanier(
       panier.map((p) =>
         p.id === id
           ? {
-              ...p,
-              quantite: p.quantite + 1,
-            }
+            ...p,
+            quantite: p.quantite + 1,
+          }
           : p
       )
     );
@@ -274,9 +245,9 @@ const validerVente = () => {
         .map((p) =>
           p.id === id
             ? {
-                ...p,
-                quantite: p.quantite - 1,
-              }
+              ...p,
+              quantite: p.quantite - 1,
+            }
             : p
         )
         .filter((p) => p.quantite > 0)
@@ -325,151 +296,151 @@ const validerVente = () => {
 
         <Navbar />
 
-<div className="container mt-4">
-<h2 className="mb-4">🛒 Nouvelle Vente</h2>
+        <div className="container mt-4">
+          <h2 className="mb-4">🛒 Nouvelle Vente</h2>
 
-<div className="card shadow-sm mb-4">
+          <div className="card shadow-sm mb-4">
 
-  <div className="card-body">
+            <div className="card-body">
 
-    <div className="row g-3">
+              <div className="row g-3">
 
-      {/* Recherche */}
-      <div className="col-lg-8">
+                {/* Recherche */}
+                <div className="col-lg-8">
 
-        <label className="form-label">
-          Rechercher un produit
-        </label>
+                  <label className="form-label">
+                    Rechercher un produit
+                  </label>
 
-        <input
-          type="text"
-          className="form-control"
-          placeholder="Nom du produit..."
-          value={recherche}
-          onChange={(e) => setRecherche(e.target.value)}
-        />
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Nom du produit..."
+                    value={recherche}
+                    onChange={(e) => setRecherche(e.target.value)}
+                  />
 
-        {recherche !== "" && (
+                  {recherche !== "" && (
 
-          <div
-            className="list-group position-absolute"
-            style={{
-              width: "45%",
-              zIndex: 1000
-            }}
-          >
+                    <div
+                      className="list-group position-absolute"
+                      style={{
+                        width: "45%",
+                        zIndex: 1000
+                      }}
+                    >
 
-            {produits
-              .filter((p) =>
-                p.nom
-                  .toLowerCase()
-                  .includes(recherche.toLowerCase())
-              )
-              .slice(0,5)
-              .map((p)=>(
+                      {produits
+                        .filter((p) =>
+                          p.nom
+                            .toLowerCase()
+                            .includes(recherche.toLowerCase())
+                        )
+                        .slice(0, 5)
+                        .map((p) => (
 
-                <button
-                  key={p.id}
-                  className="list-group-item list-group-item-action"
-                  onClick={()=>{
-                    ajouterAuPanier(p);
-                    setRecherche("");
-                  }}
-                >
-                  {p.nom} - {p.prixVente} DA
-                </button>
+                          <button
+                            key={p.id}
+                            className="list-group-item list-group-item-action"
+                            onClick={() => {
+                              ajouterAuPanier(p);
+                              setRecherche("");
+                            }}
+                          >
+                            {p.nom} - {p.prixVente} DA
+                          </button>
 
-              ))}
+                        ))}
+
+                    </div>
+
+                  )}
+
+                </div>
+
+                {/* Scanner */}
+                <div className="col-lg-4 d-grid">
+
+                  <label className="form-label">
+                    Scanner
+                  </label>
+
+                  <button
+                    className="btn btn-success"
+                    onClick={() => setScannerVisible(true)}
+                  >
+                    📷 Scanner un produit
+                  </button>
+
+                </div>
+
+              </div>
+
+              {scannerVisible && (
+
+                <div className="mt-3">
+
+                  <BarcodeScanner onScan={rechercherProduit} />
+
+                </div>
+
+              )}
+
+            </div>
 
           </div>
 
-        )}
+          <div className="card shadow-sm mb-4">
 
-      </div>
+            <div className="card-header">
+              Vente libre
+            </div>
 
-      {/* Scanner */}
-      <div className="col-lg-4 d-grid">
+            <div className="card-body">
 
-        <label className="form-label">
-          Scanner
-        </label>
+              <div className="row g-3">
 
-        <button
-          className="btn btn-success"
-          onClick={() => setScannerVisible(true)}
-        >
-          📷 Scanner un produit
-        </button>
+                <div className="col-md-6">
 
-      </div>
+                  <input
+                    className="form-control"
+                    placeholder="Description"
+                    value={descriptionLibre}
+                    onChange={(e) => setDescriptionLibre(e.target.value)}
+                  />
 
-    </div>
+                </div>
 
-    {scannerVisible && (
+                <div className="col-md-3">
 
-      <div className="mt-3">
+                  <input
+                    type="number"
+                    className="form-control"
+                    placeholder="Prix"
+                    value={prixLibre}
+                    onChange={(e) => setPrixLibre(e.target.value)}
+                  />
 
-        <BarcodeScanner onScan={rechercherProduit} />
+                </div>
 
-      </div>
+                <div className="col-md-3 d-grid">
 
-    )}
+                  <button
+                    className="btn btn-primary"
+                    onClick={ajouterProduitLibre}
+                  >
+                    Ajouter
+                  </button>
 
-  </div>
+                </div>
 
-</div>
+              </div>
 
-<div className="card shadow-sm mb-4">
-
-  <div className="card-header">
-    Vente libre
-  </div>
-
-  <div className="card-body">
-
-    <div className="row g-3">
-
-      <div className="col-md-6">
-
-        <input
-          className="form-control"
-          placeholder="Description"
-          value={descriptionLibre}
-          onChange={(e)=>setDescriptionLibre(e.target.value)}
-        />
-
-      </div>
-
-      <div className="col-md-3">
-
-        <input
-          type="number"
-          className="form-control"
-          placeholder="Prix"
-          value={prixLibre}
-          onChange={(e)=>setPrixLibre(e.target.value)}
-        />
-
-      </div>
-
-      <div className="col-md-3 d-grid">
-
-        <button
-          className="btn btn-primary"
-          onClick={ajouterProduitLibre}
-        >
-          Ajouter
-        </button>
-
-      </div>
-
-    </div>
-
-  </div>
+            </div>
 
 
 
-</div>
+          </div>
           <button
             className="btn btn-success mb-3"
             onClick={() => setScannerVisible(true)}
@@ -500,32 +471,32 @@ const validerVente = () => {
             <tbody>
 
               {panier.map((p) => (
-                
+
                 <tr key={p.id}>
                   <td>
 
-  <button
-    className="btn btn-success btn-sm me-1"
-    onClick={() => augmenter(p.id)}
-  >
-    +
-  </button>
+                    <button
+                      className="btn btn-success btn-sm me-1"
+                      onClick={() => augmenter(p.id)}
+                    >
+                      +
+                    </button>
 
-  <button
-    className="btn btn-warning btn-sm me-1"
-    onClick={() => diminuer(p.id)}
-  >
-    -
-  </button>
+                    <button
+                      className="btn btn-warning btn-sm me-1"
+                      onClick={() => diminuer(p.id)}
+                    >
+                      -
+                    </button>
 
-  <button
-    className="btn btn-danger btn-sm"
-    onClick={() => supprimer(p.id)}
-  >
-    🗑
-  </button>
+                    <button
+                      className="btn btn-danger btn-sm"
+                      onClick={() => supprimer(p.id)}
+                    >
+                      🗑
+                    </button>
 
-</td>
+                  </td>
                   <td>{p.nom}</td>
 
                   <td>{p.prix} DA</td>
@@ -556,34 +527,34 @@ const validerVente = () => {
           </select>
           <div className="row">
 
-  <div className="col-md-4">
+            <div className="col-md-4">
 
-    <label>Montant reçu</label>
+              <label>Montant reçu</label>
 
-    <input
-      type="number"
-      className="form-control"
-      value={montantRecu}
-      onChange={(e) =>
-        setMontantRecu(e.target.value)
-      }
-    />
+              <input
+                type="number"
+                className="form-control"
+                value={montantRecu}
+                onChange={(e) =>
+                  setMontantRecu(e.target.value)
+                }
+              />
 
-  </div>
+            </div>
 
-  <div className="col-md-4">
+            <div className="col-md-4">
 
-    <label>Monnaie</label>
+              <label>Monnaie</label>
 
-    <input
-      className="form-control"
-      value={monnaie >= 0 ? monnaie : 0}
-      readOnly
-    />
+              <input
+                className="form-control"
+                value={monnaie >= 0 ? monnaie : 0}
+                readOnly
+              />
 
-  </div>
+            </div>
 
-</div>
+          </div>
           <button
             className="btn btn-primary"
             onClick={validerVente}
@@ -596,57 +567,57 @@ const validerVente = () => {
       </div>
       <div style={{ display: "none" }}>
 
-  <div ref={ticketRef}>
+        <div ref={ticketRef}>
 
-    <h2 style={{ textAlign: "center" }}>
-      SUPERETTE
-    </h2>
+          <h2 style={{ textAlign: "center" }}>
+            SUPERETTE
+          </h2>
 
-    <hr />
+          <hr />
 
-    {panier.map((p) => (
+          {panier.map((p) => (
 
-      <div
-        key={p.id}
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          marginBottom: 5,
-        }}
-      >
-        <span>
-          {p.nom} x {p.quantite}
-        </span>
+            <div
+              key={p.id}
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                marginBottom: 5,
+              }}
+            >
+              <span>
+                {p.nom} x {p.quantite}
+              </span>
 
-        <span>
-          {p.prix * p.quantite} DA
-        </span>
+              <span>
+                {p.prix * p.quantite} DA
+              </span>
+
+            </div>
+
+          ))}
+
+          <hr />
+
+          <h3>Total : {total} DA</h3>
+
+          <p>Mode : {modePaiement}</p>
+
+          <p>
+            Date :
+            {" "}
+            {new Date().toLocaleString()}
+          </p>
+
+          <br />
+
+          <p style={{ textAlign: "center" }}>
+            Merci pour votre visite
+          </p>
+
+        </div>
 
       </div>
-
-    ))}
-
-    <hr />
-
-    <h3>Total : {total} DA</h3>
-
-    <p>Mode : {modePaiement}</p>
-
-    <p>
-      Date :
-      {" "}
-      {new Date().toLocaleString()}
-    </p>
-
-    <br />
-
-    <p style={{ textAlign: "center" }}>
-      Merci pour votre visite
-    </p>
-
-  </div>
-
-</div>
     </div>
 
   );

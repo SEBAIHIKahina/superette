@@ -1,15 +1,8 @@
-module.exports = (app) => {
+const router = require("express").Router();
+const ventes = require("../controllers/vente.controller");
 
-  const ventes = require("../controllers/vente.controller");
+router.post("/", ventes.create);
+router.get("/", ventes.findAll);
+router.get("/:id", ventes.findOne);
 
-  const router = require("express").Router();
-
-  router.post("/", ventes.create);
-
-  router.get("/", ventes.findAll);
-
-  router.get("/:id", ventes.findOne);
-
-  app.use("/api/ventes", router);
-
-};
+module.exports = router;

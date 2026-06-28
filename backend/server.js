@@ -1,6 +1,7 @@
 const express = require("express");
-const cors = require("cors");
 const app = express();
+
+const cors = require("cors");
 const db = require("./models");
 
 // ======================
@@ -43,9 +44,9 @@ app.get("/", (req, res) => {
 // ======================
 // Routes
 // ======================
-require("./routes/categorie.routes")(app);
-require("./routes/produit.routes")(app);
-require("./routes/vente.routes")(app);
+app.use("/api/categories", require("./routes/categorie.routes"));
+app.use("/api/produits", require("./routes/produit.routes"));
+app.use("/api/ventes", require("./routes/vente.routes"));
 // ======================
 // Lancement du serveur
 // ======================

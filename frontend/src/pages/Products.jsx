@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import ProductService from "../services/produit.service";
 import Barcode from "react-barcode";
 import Side from "../components/Side";
 import Navbar from "../components/Navbar";
 import BarcodeScanner from "../components/BarcodeScanner";
-function Products() {
 
+function Products() {
   const [produits, setProduits] = useState([]);
   const [scannerVisible, setScannerVisible] = useState(false);
+
   const [form, setForm] = useState({
     nom: "",
     codeBarre: "",
@@ -22,28 +23,25 @@ function Products() {
     chargerProduits();
   }, []);
 
+  // Charger produits
   const chargerProduits = () => {
-    axios
-      .get("http://localhost:5000/api/produits")
+    ProductService.getAll()
       .then((res) => setProduits(res.data))
       .catch((err) => console.log(err));
   };
 
+  // Input change
   const handleChange = (e) => {
-
     setForm({
       ...form,
       [e.target.name]: e.target.value,
     });
-
   };
 
+  // Ajouter produit
   const ajouterProduit = () => {
-  console.log("Formulaire :", form);
-    axios
-      .post("http://localhost:5000/api/produits", form)
+    ProductService.create(form)
       .then(() => {
-
         chargerProduits();
 
         setForm({
@@ -55,43 +53,35 @@ function Products() {
           categorieNom: "",
           etat: true,
         });
-
       })
-      .catch((err) =>{
-  console.log("Erreur complète :", err);
-  console.log("Réponse :", err.response);
-  console.log("Données :", err.response?.data);
-});
-
+      .catch((err) => {
+        console.log("Erreur :", err.response?.data);
+      });
   };
+
+  // Scanner code-barre
   const rechercherParCodeBarre = (code) => {
+    setForm({
+      ...form,
+      codeBarre: code,
+    });
 
-  setForm({
-    ...form,
-    codeBarre: code,
-  });
+    setScannerVisible(false);
+  };
 
-  setScannerVisible(false);
-
-};
   return (
-
     <div className="d-flex">
-
       <Side />
 
       <div className="flex-grow-1">
-
         <Navbar />
 
         <div className="container mt-4">
-
           <h2>Produits</h2>
 
+          {/* FORM */}
           <div className="card p-3 mb-4">
-
             <div className="row">
-
               <div className="col-md-4">
                 <input
                   className="form-control"
@@ -104,24 +94,21 @@ function Products() {
 
               <div className="col-md-4">
                 <div className="input-group">
+                  <input
+                    className="form-control"
+                    placeholder="Code Barre"
+                    name="codeBarre"
+                    value={form.codeBarre}
+                    readOnly
+                  />
 
-    <input
-      className="form-control"
-      placeholder="Code Barre"
-      name="codeBarre"
-      value={form.codeBarre}
-      readOnly
-    />
-
-    <button
-      className="btn btn-success"
-      type="button"
-      onClick={() => setScannerVisible(true)}
-    >
-      Scanner
-    </button>
-
-  </div>
+                  <button
+                    className="btn btn-success"
+                    onClick={() => setScannerVisible(true)}
+                  >
+                    Scanner
+                  </button>
+                </div>
               </div>
 
               <div className="col-md-4">
@@ -133,13 +120,11 @@ function Products() {
                   onChange={handleChange}
                 />
               </div>
-
             </div>
 
             <br />
 
             <div className="row">
-
               <div className="col-md-4">
                 <input
                   className="form-control"
@@ -169,93 +154,67 @@ function Products() {
                   onChange={handleChange}
                 />
               </div>
-
             </div>
 
             <br />
 
-            <div className="d-flex gap-2">
-
-               <button
-                   className="btn btn-primary"
-                   onClick={ajouterProduit}
-  >
-                    Ajouter Produit
-                 </button>
-
-
-</div>
-
+            <button
+              className="btn btn-primary"
+              onClick={ajouterProduit}
+            >
+              Ajouter Produit
+            </button>
           </div>
-           {scannerVisible && (
-  <div className="card p-3 mb-3">
-    <BarcodeScanner onScan={rechercherParCodeBarre} />
 
-    <button
-      className="btn btn-danger mt-3"
-      onClick={() => setScannerVisible(false)}
-    >
-      Fermer
-    </button>
-  </div>
-)}
+          {/* SCANNER */}
+          {scannerVisible && (
+            <div className="card p-3 mb-3">
+              <BarcodeScanner onScan={rechercherParCodeBarre} />
+
+              <button
+                className="btn btn-danger mt-3"
+                onClick={() => setScannerVisible(false)}
+              >
+                Fermer
+              </button>
+            </div>
+          )}
+
+          {/* TABLE */}
           <table className="table table-bordered">
-
             <thead>
-
               <tr>
-
                 <th>Nom</th>
                 <th>Code Barre</th>
-                <th>Image Code Barre</th>
+                <th>Image</th>
                 <th>Prix Vente</th>
                 <th>Stock</th>
-
               </tr>
-
             </thead>
 
             <tbody>
-
               {produits.map((p) => (
-
                 <tr key={p.id}>
-
                   <td>{p.nom}</td>
-
                   <td>{p.codeBarre}</td>
-
                   <td>
-
                     <Barcode
                       value={p.codeBarre}
                       width={1}
                       height={40}
                       fontSize={12}
                     />
-
                   </td>
-
                   <td>{p.prixVente} DA</td>
-
                   <td>{p.stock}</td>
-
                 </tr>
-
               ))}
-
             </tbody>
-
           </table>
-
         </div>
-
       </div>
-
     </div>
-
   );
-
 }
 
 export default Products;

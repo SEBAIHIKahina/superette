@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Side from "../components/Side";
 import Navbar from "../components/Navbar";
-import CategorieService from "../../services/categorie.service";
+import CategorieService from "../services/categorie.service";
 
 function Categories() {
   const [nom, setNom] = useState("");
