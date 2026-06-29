@@ -1,3 +1,11 @@
+// id
+// nom
+// prixVente
+// stockTotal
+// stockMinimum
+// categorieNom
+// image
+
 module.exports = (sequelize, Sequelize) => {
   const Produit = sequelize.define("produits", {
     id: {
@@ -8,17 +16,6 @@ module.exports = (sequelize, Sequelize) => {
 
     nom: {
       type: Sequelize.STRING,
-      allowNull: false,
-    },
-
-    codeBarre: {
-      type: Sequelize.STRING,
-      allowNull: false,
-      unique: true,
-    },
-
-    prixAchat: {
-      type: Sequelize.FLOAT,
       allowNull: false,
     },
 
@@ -36,16 +33,16 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.BOOLEAN,
       defaultValue: true,
     },
-
-    categorieNom: {
-      type: Sequelize.STRING,
-      allowNull: false,
-    },
     seuilAlerte: {
       type: Sequelize.INTEGER,
       allowNull: false,
       defaultValue: 5,
     },
+    image: {
+      type: Sequelize.STRING,
+      allowNull: true,
+    },
+
   });
 
   return Produit;

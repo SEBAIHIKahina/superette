@@ -1,26 +1,17 @@
 module.exports = (sequelize, Sequelize) => {
-
-  const DetailVente = sequelize.define("detailventes", {
-
+  const Parametre = sequelize.define("parametres", {
     id: {
       type: Sequelize.INTEGER,
       primaryKey: true,
       autoIncrement: true,
     },
 
-    quantite: {
+    seuilAlerteExpiration: {
       type: Sequelize.INTEGER,
       allowNull: false,
+      defaultValue: 7,
     },
-
-    prixUnitaire: {
-      type: Sequelize.FLOAT,
-      allowNull: false,
-    },
-
-
   });
 
-  return DetailVente;
-
+  return Parametre;
 };

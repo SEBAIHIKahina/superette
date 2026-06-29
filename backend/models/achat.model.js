@@ -1,26 +1,28 @@
 module.exports = (sequelize, Sequelize) => {
-
-  const Vente = sequelize.define("ventes", {
-
+  const Achat = sequelize.define("achats", {
     id: {
       type: Sequelize.INTEGER,
       primaryKey: true,
       autoIncrement: true,
     },
 
-    dateVente: {
+    date: {
       type: Sequelize.DATE,
+      allowNull: false,
       defaultValue: Sequelize.NOW,
     },
 
-    total: {
+    montantTotal: {
       type: Sequelize.FLOAT,
       allowNull: false,
       defaultValue: 0,
     },
 
+    remarque: {
+      type: Sequelize.STRING,
+      allowNull: true,
+    },
   });
 
-  return Vente;
-
+  return Achat;
 };
