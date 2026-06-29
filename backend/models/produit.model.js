@@ -41,6 +41,11 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.STRING,
       allowNull: false,
     },
+    seuilAlerte: {
+      type: Sequelize.INTEGER,
+      allowNull: false,
+      defaultValue: 5,
+    },
   });
 
   return Produit;

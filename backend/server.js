@@ -26,7 +26,7 @@ app.use(express.urlencoded({ extended: true }));
 // Utilise force:true uniquement la première fois.
 // Ensuite remplace par sync() pour éviter de supprimer les données.
 db.sequelize
-  .sync()
+  .sync({ alter: true })
   .then(() => {
     console.log("Base de données synchronisée.");
   })
