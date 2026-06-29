@@ -32,6 +32,11 @@ function Side() {
             Ventes
           </Link>
         </li>
+        <li>
+          <Link className="nav-link text-white" to="/Fournisseurs">
+            Fournisseurs
+          </Link>
+        </li>
       </ul>
     </div>
   );
