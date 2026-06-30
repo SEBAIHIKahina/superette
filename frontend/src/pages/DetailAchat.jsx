@@ -3,8 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import achatService from "../services/achat.service";
 
-import Side from "../components/Side";
-import Navbar from "../components/Navbar";
+
 
 function DetailAchat() {
     const { id } = useParams();
@@ -37,11 +36,11 @@ function DetailAchat() {
     return (
         <div className="d-flex">
 
-            <Side />
+            
 
             <div className="flex-grow-1">
 
-                <Navbar />
+                
 
                 <div className="container-fluid py-4">
 

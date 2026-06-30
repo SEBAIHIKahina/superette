@@ -9,8 +9,7 @@ import AchatTable from "../components/AchatTable";
 import ProductModal from "../components/ProductModal";
 import categorieService from "../services/categorie.service";
 import BarcodeScanner from "../components/BarcodeScanner";
-import Side from "../components/Side";
-import Navbar from "../components/Navbar";
+
 import { useNavigate } from "react-router-dom";
 
 function Achats() {
@@ -256,11 +255,11 @@ function Achats() {
 
         <div className="d-flex">
 
-            <Side />
+            
 
             <div className="flex-grow-1">
 
-                <Navbar />
+                
 
                 <div className="container-fluid py-4">
 

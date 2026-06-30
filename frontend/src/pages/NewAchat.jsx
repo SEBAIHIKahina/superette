@@ -9,8 +9,7 @@ import ProductSelector from "../components/ProductSelector";
 import AchatTable from "../components/AchatTable";
 import ProductModal from "../components/ProductModal";
 import BarcodeScanner from "../components/BarcodeScanner";
-import Side from "../components/Side";
-import Navbar from "../components/Navbar";
+
 import produitService from "../services/produit.service";
 
 function NewAchat() {
@@ -189,11 +188,11 @@ function NewAchat() {
     return (
         <div className="d-flex">
 
-            <Side />
+           
 
             <div className="flex-grow-1">
 
-                <Navbar />
+             
 
                 <div className="container-fluid py-4">
 
