@@ -2,8 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useReactToPrint } from "react-to-print";
 import ProductService from "../services/produit.service";
 import SalesService from "../services/vente.service";
-import Side from "../components/Side";
-import Navbar from "../components/Navbar";
+
 import BarcodeScanner from "../components/BarcodeScanner";
 
 
@@ -287,11 +286,10 @@ const monnaie = montant > total ? montant - total : 0;
 
     <div className="d-flex">
 
-      <Side />
-
+     
       <div className="flex-grow-1">
 
-        <Navbar />
+        
 
         <div className="container mt-4">
           <h2 className="mb-4">🛒 Nouvelle Vente</h2>

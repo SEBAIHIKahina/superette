@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import Navbar from "../components/Navbar";
-import Side from "../components/Side";
+
 import ProductModal from "../components/ProductModal";
 import BarcodeScanner from "../components/BarcodeScanner";
 import BarcodePrint from "../components/BarcodePrint";
@@ -119,23 +118,7 @@ function Products() {
       console.error(err);
     }
   };
-const handleScan = async (result) => {
-  const code = result?.text || result;
-
-  console.log("CODE FINAL :", code);
-
-  if (!code) return;
-
-  setShowScanner(false);
-
-  try {
-    const res = await produitService.getByBarcode(code);
-
-    setSelectedProduit(res.data);
-  } catch (err) {
-    alert("Produit introuvable.");
-  }
-};
+0
 
   const filteredProduits = produits.filter((p) => {
 
@@ -154,10 +137,10 @@ console.log(produits);
 
   return (
     <div className="d-flex">
-      <Side />
+      
 
       <div className="flex-grow-1">
-        <Navbar />
+       
 
         <div className="container-fluid mt-4">
 

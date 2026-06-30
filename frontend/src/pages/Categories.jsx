@@ -1,6 +1,5 @@
 import { useState } from "react";
-import Side from "../components/Side";
-import Navbar from "../components/Navbar";
+
 import CategorieService from "../services/categorie.service";
 
 function Categories() {
@@ -55,10 +54,10 @@ function Categories() {
 
   return (
     <div className="d-flex">
-      <Side />
+      
 
       <div className="flex-grow-1">
-        <Navbar />
+        
 
         <div className="container mt-4">
           <h2 className="mb-4">Gestion des catégories</h2>

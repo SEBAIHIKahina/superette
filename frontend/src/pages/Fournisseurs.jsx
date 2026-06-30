@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import Side from "../components/Side";
-import Navbar from "../components/Navbar";
+
 import fournisseurService from "../services/fournisseur.service";
 import Swal from "sweetalert2";
 import { Modal } from "bootstrap";
@@ -181,11 +180,10 @@ function Fournisseurs() {
     return (
         <div className="d-flex">
 
-            <Side />
-
+          
             <div className="flex-grow-1">
 
-                <Navbar />
+                
 
                 <div className="container-fluid mt-4">
 
