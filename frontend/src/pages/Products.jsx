@@ -12,6 +12,9 @@ import { useReactToPrint } from "react-to-print";
 import { useRef } from "react";
 
 function Products() {
+  const [selectedBarcode, setSelectedBarcode] = useState(null);
+  const [showCodesModal, setShowCodesModal] = useState(false);
+  const [selectedCodes, setSelectedCodes] = useState([]);
   const [produits, setProduits] = useState([]);
   const [categories, setCategories] = useState([]);
 
@@ -146,13 +149,14 @@ function Products() {
     const codeTrouve = p.codebarres?.some((c) =>
       c.code.toLowerCase().includes(recherche)
     );
-
+console.log(produits);
     return (
       p.nom.toLowerCase().includes(recherche) ||
       p.categorieNom.toLowerCase().includes(recherche) ||
       codeTrouve
     );
   });
+
   return (
     <div className="d-flex">
       <Side />
@@ -216,6 +220,7 @@ function Products() {
                     <th>Prix</th>
                     <th>Stock</th>
                     <th>Etat</th>
+                    <th>Codes</th>
                     <th width="280">Actions</th>
                   </tr>
 
@@ -271,7 +276,18 @@ function Products() {
                         )}
 
                       </td>
-
+                      <td>
+                        <button
+                          className="btn btn-outline-primary btn-sm"
+                          onClick={() => {
+                            setSelectedCodes(produit.code_barres || []);
+                            setSelectedProduit(produit);
+                            setShowCodesModal(true);
+                          }}
+                        >
+                          {produit.code_barres?.length || 0} code(s)
+                        </button>
+                      </td>
                       <td>
 
                         <div className="d-flex gap-2">
@@ -309,26 +325,7 @@ function Products() {
 
                           )}
 
-                          {produit.codebarres?.length > 0 && (
-
-                            <button
-                              className="btn btn-secondary btn-sm"
-                              onClick={() => {
-                                setSelectedProduit({
-                                  ...produit,
-                                  codeBarre:
-                                    produit.codebarres[0].code,
-                                });
-
-                                setTimeout(() => {
-                                  handlePrint();
-                                }, 200);
-                              }}
-                            >
-                              Imprimer
-                            </button>
-
-                          )}
+                      
 
                         </div>
 
@@ -407,16 +404,97 @@ function Products() {
 
           <div ref={printRef}>
 
+            {selectedBarcode && (
+
             <BarcodePrint
-              produit={selectedProduit}
+                produit={{
+                    ...selectedProduit,
+                    codeBarre: selectedBarcode.code,
+                }}
             />
+
+)}
 
           </div>
 
         )}
 
       </div>
+      {showCodesModal && (
+        <div
+          className="modal d-block"
+          style={{ background: "rgba(0,0,0,.5)" }}
+        >
+          <div className="modal-dialog">
 
+            <div className="modal-content">
+
+              <div className="modal-header">
+
+                <h5 className="modal-title">
+                  Codes-barres de {selectedProduit?.nom}
+                </h5>
+
+                <button
+                  className="btn-close"
+                  onClick={() => setShowCodesModal(false)}
+                ></button>
+
+              </div>
+
+              <div className="modal-body">
+
+                <table className="table table-bordered">
+
+                  <thead>
+
+                    <tr>
+                      <th>Code</th>
+                      <th width="120">Action</th>
+                    </tr>
+
+                  </thead>
+
+                  <tbody>
+
+                    {selectedCodes.map((cb) => (
+
+                      <tr key={cb.id}>
+
+                        <td>{cb.code}</td>
+
+                        <td>
+
+                          <button
+                              className="btn btn-secondary btn-sm"
+                              onClick={() => {
+                                  setSelectedBarcode(cb);
+
+                                  setTimeout(() => {
+                                      handlePrint();
+                                  }, 200);
+                              }}
+                          >
+                              Imprimer
+                          </button>
+
+                        </td>
+
+                      </tr>
+
+                    ))}
+
+                  </tbody>
+
+                </table>
+
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+      )}
     </div>
   );
 }
