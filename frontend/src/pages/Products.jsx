@@ -146,7 +146,7 @@ function Products() {
 
     const recherche = search.toLowerCase();
 
-    const codeTrouve = p.codebarres?.some((c) =>
+    const codeTrouve = p.code_barres?.some((c) =>
       c.code.toLowerCase().includes(recherche)
     );
 console.log(produits);
