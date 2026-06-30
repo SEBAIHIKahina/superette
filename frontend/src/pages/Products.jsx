@@ -119,28 +119,23 @@ function Products() {
       console.error(err);
     }
   };
+const handleScan = async (result) => {
+  const code = result?.text || result;
 
-  const handleScan = async (code) => {
+  console.log("CODE FINAL :", code);
 
-    setShowScanner(false);
+  if (!code) return;
 
-    setSearch(code);
+  setShowScanner(false);
 
-    try {
+  try {
+    const res = await produitService.getByBarcode(code);
 
-      const res = await produitService.getByBarcode(code);
-
-      if (res.data) {
-
-        setSelectedProduit(res.data);
-
-      }
-
-    } catch (err) {
-      alert("Produit introuvable.");
-    }
-
-  };
+    setSelectedProduit(res.data);
+  } catch (err) {
+    alert("Produit introuvable.");
+  }
+};
 
   const filteredProduits = produits.filter((p) => {
 

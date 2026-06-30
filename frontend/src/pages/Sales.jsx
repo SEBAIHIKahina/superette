@@ -149,16 +149,20 @@ function Sales() {
   // Scanner
   // =============================
 
-  const rechercherProduit = (code) => {
+ const rechercherProduit = (code) => {
+  console.log("CODE SCANNÉ :", code);
 
-    ProductService.getByBarcode(code)
-      .then((res) => {
-        ajouterAuPanier(res.data);
-        setScannerVisible(false);
-      })
-      .catch(() => alert("Produit introuvable"));
-
-  };
+  ProductService.getByBarcode(code)
+    .then((res) => {
+      console.log("PRODUIT TROUVÉ :", res.data);
+      ajouterAuPanier(res.data);
+      setScannerVisible(false);
+    })
+    .catch((err) => {
+      console.log("ERREUR SCAN :", err.response?.data || err);
+      alert("Produit introuvable");
+    });
+};
 
   // =============================
   // Produit libre
@@ -270,21 +274,14 @@ function Sales() {
   // =============================
   // Total
   // =============================
+const total = panier.reduce(
+  (somme, p) => somme + p.prix * p.quantite,
+  0
+);
 
-  const total = panier.reduce(
+const montant = Number(montantRecu || 0);
 
-    (somme, p) =>
-
-      somme + p.prix * p.quantite,
-
-    0
-
-  );
-
-  const monnaie =
-
-    Number(montantRecu || 0) - total;
-
+const monnaie = montant > total ? montant - total : 0;
 
   return (
 
@@ -299,96 +296,6 @@ function Sales() {
         <div className="container mt-4">
           <h2 className="mb-4">🛒 Nouvelle Vente</h2>
 
-          <div className="card shadow-sm mb-4">
-
-            <div className="card-body">
-
-              <div className="row g-3">
-
-                {/* Recherche */}
-                <div className="col-lg-8">
-
-                  <label className="form-label">
-                    Rechercher un produit
-                  </label>
-
-                  <input
-                    type="text"
-                    className="form-control"
-                    placeholder="Nom du produit..."
-                    value={recherche}
-                    onChange={(e) => setRecherche(e.target.value)}
-                  />
-
-                  {recherche !== "" && (
-
-                    <div
-                      className="list-group position-absolute"
-                      style={{
-                        width: "45%",
-                        zIndex: 1000
-                      }}
-                    >
-
-                      {produits
-                        .filter((p) =>
-                          p.nom
-                            .toLowerCase()
-                            .includes(recherche.toLowerCase())
-                        )
-                        .slice(0, 5)
-                        .map((p) => (
-
-                          <button
-                            key={p.id}
-                            className="list-group-item list-group-item-action"
-                            onClick={() => {
-                              ajouterAuPanier(p);
-                              setRecherche("");
-                            }}
-                          >
-                            {p.nom} - {p.prixVente} DA
-                          </button>
-
-                        ))}
-
-                    </div>
-
-                  )}
-
-                </div>
-
-                {/* Scanner */}
-                <div className="col-lg-4 d-grid">
-
-                  <label className="form-label">
-                    Scanner
-                  </label>
-
-                  <button
-                    className="btn btn-success"
-                    onClick={() => setScannerVisible(true)}
-                  >
-                    📷 Scanner un produit
-                  </button>
-
-                </div>
-
-              </div>
-
-              {scannerVisible && (
-
-                <div className="mt-3">
-
-                  <BarcodeScanner onScan={rechercherProduit} />
-
-                </div>
-
-              )}
-
-            </div>
-
-          </div>
 
           <div className="card shadow-sm mb-4">
 
@@ -514,31 +421,23 @@ function Sales() {
           </table>
 
           <h3>Total : {total} DA</h3>
+          
+          
 
-          <select
-            className="form-select mb-3"
-            value={modePaiement}
-            onChange={(e) =>
-              setModePaiement(e.target.value)
-            }
-          >
-            <option>Espèces</option>
-            <option>Carte Bancaire</option>
-          </select>
+          
           <div className="row">
 
             <div className="col-md-4">
 
               <label>Montant reçu</label>
 
-              <input
-                type="number"
-                className="form-control"
-                value={montantRecu}
-                onChange={(e) =>
-                  setMontantRecu(e.target.value)
-                }
-              />
+             <input
+  type="number"
+  className="form-control"
+  value={montantRecu}
+  onChange={(e) => setMontantRecu(e.target.value)}
+  placeholder="Montant reçu"
+/>
 
             </div>
 
@@ -547,14 +446,15 @@ function Sales() {
               <label>Monnaie</label>
 
               <input
-                className="form-control"
-                value={monnaie >= 0 ? monnaie : 0}
-                readOnly
-              />
+  className="form-control"
+  value={monnaie}
+  readOnly
+/>
 
             </div>
 
           </div>
+  
           <button
             className="btn btn-primary"
             onClick={validerVente}
@@ -565,57 +465,101 @@ function Sales() {
         </div>
 
       </div>
-      <div style={{ display: "none" }}>
+      <div
+  style={{
+    position: "fixed",
+    left: "-9999px",
+    top: 0,
+  }}
+>
 
-        <div ref={ticketRef}>
+       <div
+  ref={ticketRef}
+  style={{
+    width: "300px",
+    padding: "15px",
+    fontFamily: "monospace",
+    fontSize: "14px",
+    color: "#000",
+  }}
+>
 
-          <h2 style={{ textAlign: "center" }}>
-            SUPERETTE
-          </h2>
+  {/* Header */}
+  <div style={{ textAlign: "center", marginBottom: 10 }}>
+    <h2 style={{ margin: 0 }}>SUPERETTE</h2>
+    <p style={{ margin: 0, fontSize: 12 }}>
+      Vente de produits alimentaires
+    </p>
+  </div>
 
-          <hr />
+  <hr />
 
-          {panier.map((p) => (
+  {/* Produits */}
+  <div>
+    {panier.map((p) => (
+      <div
+        key={p.id}
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          marginBottom: 6,
+        }}
+      >
+        <span style={{ maxWidth: "60%" }}>
+          {p.nom} x{p.quantite}
+        </span>
 
-            <div
-              key={p.id}
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                marginBottom: 5,
-              }}
-            >
-              <span>
-                {p.nom} x {p.quantite}
-              </span>
+        <span>
+          {p.prix * p.quantite} DA
+        </span>
+      </div>
+    ))}
+  </div>
 
-              <span>
-                {p.prix * p.quantite} DA
-              </span>
+  <hr />
 
-            </div>
+  {/* Totaux */}
+  <div style={{ marginBottom: 10 }}>
+    <div style={{ display: "flex", justifyContent: "space-between" }}>
+      <strong>Total :</strong>
+      <strong>{total} DA</strong>
+    </div>
 
-          ))}
+    <div style={{ display: "flex", justifyContent: "space-between" }}>
+      <span>Mode :</span>
+      <span>{modePaiement}</span>
+    </div>
 
-          <hr />
+    {montantRecu && (
+      <div style={{ display: "flex", justifyContent: "space-between" }}>
+        <span>Reçu :</span>
+        <span>{montantRecu} DA</span>
+      </div>
+    )}
 
-          <h3>Total : {total} DA</h3>
+    {montantRecu && (
+      <div style={{ display: "flex", justifyContent: "space-between" }}>
+        <span>Monnaie :</span>
+        <span>{monnaie} DA</span>
+      </div>
+    )}
+  </div>
 
-          <p>Mode : {modePaiement}</p>
+  <hr />
 
-          <p>
-            Date :
-            {" "}
-            {new Date().toLocaleString()}
-          </p>
+  {/* Date */}
+  <div style={{ textAlign: "center", fontSize: 12 }}>
+    <p style={{ margin: 0 }}>
+      {new Date().toLocaleString()}
+    </p>
+  </div>
 
-          <br />
+  {/* Footer */}
+  <div style={{ textAlign: "center", marginTop: 10 }}>
+    <strong>Merci pour votre visite 🙏</strong>
+  </div>
 
-          <p style={{ textAlign: "center" }}>
-            Merci pour votre visite
-          </p>
-
-        </div>
+</div>
 
       </div>
     </div>
