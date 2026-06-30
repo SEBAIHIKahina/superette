@@ -2,6 +2,8 @@ const router = require("express").Router();
 const categories = require("../controllers/categories.controller");
 
 router.post("/", categories.createCategorie);
+router.get("/actives", categories.getActiveCategories);
+
 
 module.exports = router;
 

@@ -48,3 +48,16 @@ exports.createCategorie = async (req, res) => {
     res.status(500).json({ status: "error", message: "Erreur lors de l'ajout de la catégorie." });
   }
 };
+exports.getActiveCategories = async (req, res) => {
+  try {
+    // Récupérer uniquement les catégories avec l'état `true` (actives)
+    const activeCategories = await db.categories.findAll({
+      where: { etat: true }
+    });
+
+    res.status(200).json(activeCategories);
+  } catch (error) {
+    console.error("Erreur lors de la récupération des catégories actives :", error);
+    res.status(500).json({ message: "Erreur serveur" });
+  }
+};
