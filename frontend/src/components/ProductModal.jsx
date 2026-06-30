@@ -126,7 +126,7 @@ function ProductModal({
                       Choisir...
                     </option>
 
-                    {categories.map((cat) => (
+                    {(categories || []).map((cat) => (
                       <option
                         key={cat.nom}
                         value={cat.nom}

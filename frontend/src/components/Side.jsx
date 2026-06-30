@@ -87,6 +87,11 @@ function Side({ collapsed }) {
             )}
           </NavLink>
         </li>
+        <li>
+          <Link className="nav-link text-white" to="/achats">
+            Achats
+          </Link>
+        </li>
 
         <li className="nav-item mb-2">
           <NavLink

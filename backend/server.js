@@ -48,6 +48,7 @@ app.use("/api/categories", require("./routes/categorie.routes"));
 app.use("/api/produits", require("./routes/produit.routes"));
 app.use("/api/ventes", require("./routes/vente.routes"));
 app.use("/api/fournisseurs", require("./routes/fournisseur.routes"));
+app.use("/api/achats", require("./routes/achat.routes"));
 
 // ======================
 // Lancement du serveur

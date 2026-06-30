@@ -86,6 +86,7 @@ db.achats.belongsTo(db.fournisseurs, {
 // achat lotstock
 db.achats.hasMany(db.lotStocks, {
   foreignKey: "achatId",
+  as: "lots",
 });
 
 db.lotStocks.belongsTo(db.achats, {
