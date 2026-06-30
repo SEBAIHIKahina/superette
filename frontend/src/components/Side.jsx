@@ -87,11 +87,24 @@ function Side({ collapsed }) {
             )}
           </NavLink>
         </li>
-        <li>
-          <Link className="nav-link text-white" to="/achats">
-            Achats
-          </Link>
-        </li>
+        <li className="nav-item mb-2">
+  <NavLink
+    to="/achats"
+    className={({ isActive }) =>
+      `nav-link rounded ${
+        isActive
+          ? "bg-success text-white"
+          : "text-white"
+      }`
+    }
+  >
+    <i className="bi bi-bag-check"></i>
+
+    {!collapsed && (
+      <span className="ms-2">Achats</span>
+    )}
+  </NavLink>
+</li>
 
         <li className="nav-item mb-2">
           <NavLink
