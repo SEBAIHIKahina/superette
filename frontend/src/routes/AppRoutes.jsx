@@ -12,6 +12,8 @@ import Fournisseurs from "../pages/Fournisseurs";
 import Achats from "../pages/Achats";
 import NewAchat from "../pages/NewAchat";
 import DetailAchat from "../pages/DetailAchat";
+import NewSale from "../pages/NewSale";
+import DetailSale from "../components/DetailSale";
 
 function AppRoutes() {
   const [collapsed, setCollapsed] = useState(false);
@@ -39,10 +41,19 @@ function AppRoutes() {
               <Route path="/products" element={<Products />} />
               <Route path="/categories" element={<Categories />} />
               <Route path="/sales" element={<Sales />} />
+
+              <Route path="/sales/new" element={<NewSale />} />
+
+              <Route path="/sales/:id" element={<DetailSale />} />
               <Route path="/fournisseurs" element={<Fournisseurs />} />
               <Route path="/Achats" element={<Achats />} />
               <Route path="/achats/nouveau" element={<NewAchat />} />
               <Route path="/achats/:id" element={<DetailAchat />} />
+              <Route path="/sales" element={<Sales />} />
+
+              <Route path="/sales/new" element={<NewSale />} />
+
+              <Route path="/sales/:id" element={<DetailSale />} />
             </Routes>
           </div>
 
